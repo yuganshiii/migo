@@ -34,3 +34,4 @@ class GameState(TypedDict):
     max_rounds: int
     round_score: int
     round_history: list[RoundResult]
+    should_end: bool

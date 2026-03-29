@@ -35,7 +35,18 @@ def fetch_wikipedia_article(topic: str) -> str:
             )
 
     except wikipedia.exceptions.PageError:
-        logger.error("No Wikipedia page found for '{}'", topic)
+        logger.warning("No direct page for '{}', falling back to search", topic)
+        results = wikipedia.search(topic)
+        if results:
+            try:
+                page = wikipedia.page(results[0], auto_suggest=False)
+                logger.success(
+                    "Fetched article via search: '{}' ({} chars)",
+                    page.title, len(page.content),
+                )
+                return page.content
+            except (wikipedia.exceptions.PageError, wikipedia.exceptions.DisambiguationError):
+                pass
         raise ValueError(f"No Wikipedia article found for '{topic}'")
 
     except Exception as e:
